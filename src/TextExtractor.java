@@ -6,12 +6,15 @@ import java.util.logging.Logger;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
-import org.apache.pdfbox.util.PDFStreamEngine;
+import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
 
-
-public class TextExtractor extends PDFStreamEngine {
+public class TextExtractor extends PDFTextStripper {
 	
+	public TextExtractor() throws IOException {
+		super();
+	}
+
 	private ArrayList<TextRun> textRuns = new ArrayList<TextRun>();
 
 	protected void showCharacter(TextPosition tp) {

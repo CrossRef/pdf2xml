@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE pdf2xml SYSTEM "pdf2xml.dtd">
+
+<pdf2xml>
+<page number="1" position="absolute" top="0" left="0" height="1262" width="892">
+	<fontspec id="0" size="15" family="Times" color="#000000"/>
+	<fontspec id="1" size="15" family="Times" color="#000000"/>
+	<fontspec id="2" size="15" family="Times" color="#000000"/>
+	<fontspec id="3" size="15" family="Times" color="#000000"/>
+	<fontspec id="4" size="15" family="Times" color="#000000"/>
+	<fontspec id="5" size="15" family="Times" color="#000000"/>
+	<fontspec id="6" size="15" family="Times" color="#000000"/>
+	<fontspec id="7" size="15" family="Times" color="#000000"/>
+	<fontspec id="8" size="15" family="Times" color="#000000"/>
+	<fontspec id="9" size="15" family="Times" color="#000000"/>
+	<fontspec id="10" size="15" family="Times" color="#000000"/>
+<text top="111" left="115" width="98" height="18" font="3"><![CDATA[Hello World.]]></text>
+<text top="152" left="115" width="114" height="18" font="6"><![CDATA[This is in bold]]></text>
+<text top="193" left="115" width="143" height="18" font="10"><![CDATA[And this is in italic]]></text>
+</page>
+</pdf2xml>

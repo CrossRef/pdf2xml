@@ -17,7 +17,7 @@ public class TextExtractor extends PDFTextStripper {
 
 	private ArrayList<TextRun> textRuns = new ArrayList<TextRun>();
 
-	protected void showCharacter(TextPosition tp) {
+	protected void processTextPosition(TextPosition tp) {
 		PDGraphicsState gs = getGraphicsState();
 		
 		// try to find an existing text run that fits

@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -26,9 +27,8 @@ public class Main {
 		
 		for (Object p : pages) {
 			PDPage page = (PDPage) p;
-			te.setGraphicsStates(page.getResources().getGraphicsStates());
-			te.setFonts(page.getResources().getFonts());
-			te.setGraphicsStack(new Stack());
+			
+			te.setShouldSeparateByBeads(false);
 			te.processStream(page, 
 							 page.getResources(), 
 							 page.getContents().getStream());

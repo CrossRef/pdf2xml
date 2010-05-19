@@ -45,10 +45,14 @@ public class TextExtractor extends PDFTextStripper {
 	public String toString() {
 		String s = "";
 		for (TextRun tr : textRuns) {
-			s += tr.run + " @ " + tr.x + "," + tr.y 
-						+ " : " + tr.font.getBaseFont()
-						+ " C " + tr.strokeColor.toString()
-						+ "\n";
+			try {
+				s += tr.run + " @ " + tr.x + "," + tr.y 
+							+ " : " + tr.font.getBaseFont()
+							+ " C " + tr.strokeColor.getJavaColor()
+							+ "\n";
+			} catch (IOException e) {
+				
+			}
 		}
 		return s;
 	}
@@ -122,10 +126,11 @@ class TextRun {
 	boolean isIncidentToLeft(TextPosition tp) {
 		final float mostAcceptableLeft = x - looseness(font);
 		final float mostAcceptableRight = x;
+		final float charRightX = tp.getX() + tp.getWidth();
 		
 		return y == tp.getY() 
-				&& tp.getX() >= mostAcceptableLeft
-				&& tp.getX() <= mostAcceptableRight;
+				&& charRightX >= mostAcceptableLeft
+				&& charRightX <= mostAcceptableRight;
 	}
 	
 	boolean isIncidentToRight(TextPosition tp) {
@@ -134,7 +139,7 @@ class TextRun {
 		
 		return y == tp.getY()
 				&& tp.getX() >= mostAcceptableLeft
-				&& tp.getY() <= mostAcceptableRight;
+				&& tp.getX() <= mostAcceptableRight;
 	}
 	
 	boolean hasMatchingStyle(TextPosition tp, PDGraphicsState gs) {

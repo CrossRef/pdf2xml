@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,6 +8,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.sql.rowset.spi.XmlWriter;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -16,6 +29,9 @@ import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.TextPosition;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 public class TextExtractor extends PDFTextStripper {
 	
@@ -112,7 +128,51 @@ public class TextExtractor extends PDFTextStripper {
 	}
 	
 	public String toXml() {
-		return "";
+		String r = "";
+		
+		try {
+			DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+			DocumentBuilder b = f.newDocumentBuilder();
+			
+			Document doc = b.newDocument();
+			Element pdf2xml = doc.createElement("pdf2xml");
+			doc.appendChild(pdf2xml);
+			
+			for (TextRun tr : textRuns) {
+				Element text = doc.createElement("text");
+				text.setAttribute("top", String.valueOf(tr.y));
+				text.setAttribute("left", String.valueOf(tr.x));
+				text.setAttribute("width", String.valueOf(tr.width));
+				text.setAttribute("size", String.valueOf(tr.pointSize));
+				text.setAttribute("family", tr.font.getBaseFont());
+				text.setAttribute("color", tr.getForegroundColor());
+				text.setAttribute("bgcolor", tr.getBackgroundColor());
+				
+				CDATASection cdata = doc.createCDATASection(tr.run);
+				
+				pdf2xml.appendChild(text);
+				text.appendChild(cdata);
+			}
+			
+			Source source = new DOMSource(doc);
+			StringWriter sw = new StringWriter();
+			Result result = new StreamResult(sw);
+			
+			Transformer xformer = TransformerFactory.newInstance().newTransformer();
+			xformer.transform(source, result);
+			
+			return sw.toString();
+		} catch (TransformerConfigurationException e) {
+			e.printStackTrace();
+		} catch (TransformerFactoryConfigurationError e) {
+			e.printStackTrace();
+		} catch (TransformerException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		}
+        
+		return r;
 	}
 }
 
@@ -146,6 +206,22 @@ class TextRun implements Comparable<TextRun> {
 	
 	private static float looseness(TextPosition tp, PDFont font) {
 		return tp.getWidth() / 2;
+	}
+	
+	private static String getColorString(PDColorState c) {
+		float[] vals = c.getColorSpaceValue();
+		if (vals.length == 1) {
+			return "rgb(" + vals[0] + ", " + vals[0] + ", " + vals[0] + ")";
+		}
+		return "rgb(" + vals[0] + ", " + vals[1] + ", " + vals[2] + ")";
+	}
+	
+	String getForegroundColor() {
+		return getColorString(strokeColor);
+	}
+	
+	String getBackgroundColor() {
+		return getColorString(nonStrokeColor);
 	}
 	
 	TextRun addBefore(TextRun tr) {

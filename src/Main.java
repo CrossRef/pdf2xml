@@ -37,7 +37,7 @@ public class Main {
 		doc.close();
 		
 		te.coalesceRows();
-		System.out.println(te.toString());
+		System.out.println(te.toXml());
 	}
 	
 	public static void main(String[] filenames) {

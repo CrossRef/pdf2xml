@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.sql.rowset.spi.XmlWriter;
+
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
@@ -81,7 +83,7 @@ public class TextExtractor extends PDFTextStripper {
 				TextRun snd = runs.get(i+1);
 				
 				if (first.hasMatchingStyle(snd) 
-						&& first.isIncidentToRight(snd)) {
+						/*&& first.isIncidentToRight(snd)*/) {
 					first.addAfter(snd);
 					runs.remove(i+1);
 					textRuns.remove(snd);
@@ -97,7 +99,9 @@ public class TextExtractor extends PDFTextStripper {
 		for (TextRun tr : textRuns) {
 			try {
 				s += tr.run + " @ " + tr.x + "," + tr.y 
-							+ " : " + tr.font.getBaseFont()
+							+ " w " + tr.width
+							+ " : " + tr.font.getBaseFont() 
+							+ " " + tr.pointSize + "pt"
 							+ " C " + tr.strokeColor.getJavaColor()
 							+ "\n";
 			} catch (IOException e) {
@@ -106,12 +110,17 @@ public class TextExtractor extends PDFTextStripper {
 		}
 		return s;
 	}
+	
+	public String toXml() {
+		return "";
+	}
 }
 
 class TextRun implements Comparable<TextRun> {
 	float x;
 	float y;
 	float width;
+	float pointSize;
 	String run;
 	PDFont font;
 	PDColorState strokeColor;
@@ -125,26 +134,18 @@ class TextRun implements Comparable<TextRun> {
 		tr.strokeColor = gs.getStrokingColor();
 		tr.nonStrokeColor = gs.getNonStrokingColor();
 		tr.run = tp.getCharacter();
-		
-		try {
-			tr.width = tr.font.getStringWidth(tr.run);
-		} catch (IOException e) {
-			Logger.getAnonymousLogger()
-			      .log(Level.WARNING, "Can't get string width for new TextRun.");
-		}
+		tr.width = tp.getWidth();
+		tr.pointSize = tp.getFontSizeInPt();
 		 
 		return tr;
 	}
 	
-	private static float looseness(PDFont font) {
-		try {
-			float spaceWidth = font.getStringWidth(" ");
-			return spaceWidth * 2;
-		} catch (IOException e) {
-			Logger.getAnonymousLogger()
-				  .log(Level.WARNING, "Can't get font space width.");
-			return 0;
-		}
+	private static float looseness() {
+		return 1;
+	}
+	
+	private static float looseness(TextPosition tp, PDFont font) {
+		return tp.getWidth() / 2;
 	}
 	
 	TextRun addBefore(TextRun tr) {
@@ -187,18 +188,18 @@ class TextRun implements Comparable<TextRun> {
 		final float runRightX = tr.x + tr.width;
 		
 		return y == tr.y
-				&& runRightX >= (x - looseness(font))
-				&& runRightX <= x;
+				&& runRightX >= (x - looseness())
+				&& runRightX <= x + looseness();
 	}
 	
 	boolean isIncidentToRight(TextRun tr) {
 		return y == tr.y
-				&& tr.x >= (x + width)
-				&& tr.x <= (x + width + looseness(font));
+				&& tr.x >= (x + width - looseness())
+				&& tr.x <= (x + width + looseness());
 	}
 	
 	boolean isIncidentToLeft(TextPosition tp) {
-		final float mostAcceptableLeft = x - looseness(font);
+		final float mostAcceptableLeft = x - looseness(tp, font);
 		final float mostAcceptableRight = x;
 		final float charRightX = tp.getX() + tp.getWidth();
 		
@@ -209,7 +210,7 @@ class TextRun implements Comparable<TextRun> {
 	
 	boolean isIncidentToRight(TextPosition tp) {
 		final float mostAcceptableLeft = x + width;
-		final float mostAcceptableRight = x + width + looseness(font);
+		final float mostAcceptableRight = x + width + looseness(tp, font);
 		
 		return y == tp.getY()
 				&& tp.getX() >= mostAcceptableLeft

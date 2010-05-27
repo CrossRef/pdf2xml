@@ -144,7 +144,8 @@ public class TextExtractor extends PDFTextStripper {
 				text.setAttribute("left", String.valueOf(tr.x));
 				text.setAttribute("width", String.valueOf(tr.width));
 				text.setAttribute("size", String.valueOf(tr.pointSize));
-				text.setAttribute("family", tr.font.getBaseFont());
+				text.setAttribute("family", tr.getFontFamily());
+				text.setAttribute("face", tr.getFontFace());
 				text.setAttribute("color", tr.getForegroundColor());
 				text.setAttribute("bgcolor", tr.getBackgroundColor());
 				
@@ -222,6 +223,24 @@ class TextRun implements Comparable<TextRun> {
 	
 	String getBackgroundColor() {
 		return getColorString(nonStrokeColor);
+	}
+	
+	String getFontFamily() {
+		String fontName = font.getBaseFont();
+		String[] bits = fontName.split("\\+|-");
+		if (bits.length > 1) {
+			return bits[1];
+		}
+		return "";
+	}
+	
+	String getFontFace() {
+		String fontName = font.getBaseFont();
+		String[] bits = fontName.split("\\+|-");
+		if (bits.length > 2) {
+			return bits[2];
+		}
+		return "Normal";
 	}
 	
 	TextRun addBefore(TextRun tr) {

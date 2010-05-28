@@ -111,16 +111,12 @@ public class TextExtractor extends PDFTextStripper {
 	public String toString() {
 		String s = "";
 		for (TextRun tr : textRuns) {
-			try {
-				s += tr.run + " @ " + tr.x + "," + tr.y 
-							+ " w " + tr.width
-							+ " : " + tr.font.getBaseFont() 
-							+ " " + tr.pointSize + "pt"
-							+ " C " + tr.strokeColor.getJavaColor()
-							+ "\n";
-			} catch (IOException e) {
-				
-			}
+			s += tr.run + " @ " + tr.x + "," + tr.y 
+						+ " w " + tr.width
+						+ " : " + tr.font.getBaseFont() 
+						+ " " + tr.pointSize + "pt"
+						+ " C " + tr.getForegroundColor()
+						+ "\n";
 		}
 		return s;
 	}

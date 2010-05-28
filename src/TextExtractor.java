@@ -146,7 +146,6 @@ public class TextExtractor extends PDFTextStripper {
 				text.setAttribute("family", tr.getFontFamily());
 				text.setAttribute("face", tr.getFontFace());
 				text.setAttribute("color", tr.getForegroundColor());
-				text.setAttribute("bgcolor", tr.getBackgroundColor());
 				
 				CDATASection cdata = doc.createCDATASection(tr.run);
 				
@@ -215,10 +214,6 @@ class TextRun implements Comparable<TextRun> {
 	}
 	
 	String getForegroundColor() {
-		return getColorString(strokeColor);
-	}
-	
-	String getBackgroundColor() {
 		return getColorString(nonStrokeColor);
 	}
 	

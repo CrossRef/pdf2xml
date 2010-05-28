@@ -3,11 +3,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.sql.rowset.spi.XmlWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -61,11 +59,11 @@ public class TextExtractor extends PDFTextStripper {
 		for (TextRun tr : textRuns) {
 			if (tr.hasMatchingStyle(tp, gs)) {
 				if (tr.isIncidentToLeft(tp)) {
-					tr.addBefore(tp.getCharacter());
+					tr.addBefore(tp);
 					added = true;
 					break;
 				} else if (tr.isIncidentToRight(tp)) {
-					tr.addAfter(tp.getCharacter());
+					tr.addAfter(tp);
 					added = true;
 					break;
 				}
@@ -143,6 +141,7 @@ public class TextExtractor extends PDFTextStripper {
 				text.setAttribute("top", String.valueOf(tr.y));
 				text.setAttribute("left", String.valueOf(tr.x));
 				text.setAttribute("width", String.valueOf(tr.width));
+				text.setAttribute("height", String.valueOf(tr.height));
 				text.setAttribute("size", String.valueOf(tr.pointSize));
 				text.setAttribute("family", tr.getFontFamily());
 				text.setAttribute("face", tr.getFontFace());
@@ -178,10 +177,7 @@ public class TextExtractor extends PDFTextStripper {
 }
 
 class TextRun implements Comparable<TextRun> {
-	float x;
-	float y;
-	float width;
-	float pointSize;
+	float x, y, width, height, pointSize;
 	String run;
 	PDFont font;
 	PDColorState strokeColor;
@@ -196,6 +192,7 @@ class TextRun implements Comparable<TextRun> {
 		tr.nonStrokeColor = gs.getNonStrokingColor();
 		tr.run = tp.getCharacter();
 		tr.width = tp.getWidth();
+		tr.height = tp.getHeight();
 		tr.pointSize = tp.getFontSizeInPt();
 		 
 		return tr;
@@ -246,38 +243,28 @@ class TextRun implements Comparable<TextRun> {
 	TextRun addBefore(TextRun tr) {
 		run = tr.run + run;
 		width += tr.width;
+		height = Math.max(height, tr.height);
 		return this;
 	}
 	
 	TextRun addAfter(TextRun tr) {
 		run += tr.run;
 		width += tr.width;
+		height = Math.max(height, tr.height);
 		return this;
 	}
 	
-	TextRun addBefore(String s) {
-		run = s + run;
-		
-		try {
-			width = font.getStringWidth(run);
-		} catch (IOException e) {
-			Logger.getAnonymousLogger()
-			      .log(Level.WARNING, "Can't update TextRun width.");
-		}
-		
+	TextRun addBefore(TextPosition tp) {
+		run = tp.getCharacter() + run;
+		width += tp.getWidth();
+		height = Math.max(height, tp.getHeight());
 		return this;
 	}
 	
-	TextRun addAfter(String s) {
-		run += s;
-		
-		try {
-			width = font.getStringWidth(run);
-		} catch (IOException e) {
-			Logger.getAnonymousLogger()
-				  .log(Level.WARNING, "Can't update TextRun width.");
-		}
-		
+	TextRun addAfter(TextPosition tp) {
+		run += tp.getCharacter();
+		width += tp.getWidth();
+		height = Math.max(height, tp.getHeight());
 		return this;
 	}
 	

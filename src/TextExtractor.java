@@ -245,11 +245,13 @@ class TextRun implements Comparable<TextRun> {
 	
 	TextRun addBefore(TextRun tr) {
 		run = tr.run + run;
+		width += tr.width;
 		return this;
 	}
 	
 	TextRun addAfter(TextRun tr) {
 		run += tr.run;
+		width += tr.width;
 		return this;
 	}
 	

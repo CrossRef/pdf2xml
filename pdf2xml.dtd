@@ -20,5 +20,5 @@
     bgcolor CDATA #IMPLIED
     family CDATA #REQUIRED
     face CDATA #REQUIRED
-    size DATA #REQUIRED
+    size CDATA #REQUIRED
 >

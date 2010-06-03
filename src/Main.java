@@ -36,7 +36,6 @@ public class Main {
 		
 		doc.close();
 		
-		te.coalesceRows();
 		System.out.println(te.toXml());
 	}
 	

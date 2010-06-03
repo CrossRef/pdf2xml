@@ -3,8 +3,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,6 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDResources;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
@@ -33,21 +32,25 @@ import org.w3c.dom.Element;
 
 public class TextExtractor extends PDFTextStripper {
 	
-	private ArrayList<TextRun> textRuns;
+	private ArrayList<PageInfo> previousPages;
 	
-	private HashMap<Float, ArrayList<TextRun>> yPosMap;
+	private PageInfo currentPage;
 	
 	public TextExtractor() throws IOException {
 		super();
-		textRuns = new ArrayList<TextRun>();
-		yPosMap = new HashMap<Float, ArrayList<TextRun>>();
+		previousPages = new ArrayList<PageInfo>();
 	}
 	
 	@Override
 	public void processStream(PDPage aPage, PDResources resources,
 			COSStream cosStream) throws IOException {
+		currentPage = new PageInfo(aPage.findCropBox());
+		
 		super.processStream(aPage, resources, cosStream);
-		coalesceRows();
+		coalesceRows(currentPage);
+		
+		previousPages.add(currentPage);
+		currentPage = null;
 	}
 
 	protected void processTextPosition(TextPosition tp) {
@@ -56,7 +59,7 @@ public class TextExtractor extends PDFTextStripper {
 		// try to find an existing text run that fits
 		boolean added = false;
 		
-		for (TextRun tr : textRuns) {
+		for (TextRun tr : currentPage.textRuns) {
 			if (tr.hasMatchingStyle(tp, gs)) {
 				if (tr.isIncidentToLeft(tp)) {
 					tr.addBefore(tp);
@@ -72,22 +75,22 @@ public class TextExtractor extends PDFTextStripper {
 		
 		if (!added) {
 			TextRun newTr = TextRun.newFor(tp, gs);
-			textRuns.add(newTr);
+			currentPage.textRuns.add(newTr);
 			
-			ArrayList<TextRun> withSameY = yPosMap.get(newTr.y);
+			ArrayList<TextRun> withSameY = currentPage.yPosMap.get(newTr.y);
 			if (withSameY == null) {
 				ArrayList<TextRun> newWithSameY = new ArrayList<TextRun>();
 				newWithSameY.add(newTr);
-				yPosMap.put(newTr.y, newWithSameY);
+				currentPage.yPosMap.put(newTr.y, newWithSameY);
 			} else {
 				withSameY.add(newTr);
 			}
 		}
 	}
 	
-	public void coalesceRows() {
-		for (Float f : yPosMap.keySet()) {
-			ArrayList<TextRun> runs = yPosMap.get(f);
+	public void coalesceRows(PageInfo page) {
+		for (Float f : page.yPosMap.keySet()) {
+			ArrayList<TextRun> runs = page.yPosMap.get(f);
 			
 			Collections.sort(runs);
 			
@@ -100,7 +103,7 @@ public class TextExtractor extends PDFTextStripper {
 						/*&& first.isIncidentToRight(snd)*/) {
 					first.addAfter(snd);
 					runs.remove(i+1);
-					textRuns.remove(snd);
+					page.textRuns.remove(snd);
 				} else {
 					i++;
 				}
@@ -110,13 +113,17 @@ public class TextExtractor extends PDFTextStripper {
 	
 	public String toString() {
 		String s = "";
-		for (TextRun tr : textRuns) {
-			s += tr.run + " @ " + tr.x + "," + tr.y 
-						+ " w " + tr.width
-						+ " : " + tr.font.getBaseFont() 
-						+ " " + tr.pointSize + "pt"
-						+ " C " + tr.getForegroundColor()
-						+ "\n";
+		for (PageInfo page : previousPages) {
+			s += "Page @ " + page.clipBox.getUpperRightY()
+						   + ", " + page.clipBox.getLowerLeftX();
+			for (TextRun tr : page.textRuns) {
+				s += tr.run + " @ " + tr.x + "," + tr.y 
+							+ " w " + tr.width
+							+ " : " + tr.font.getBaseFont() 
+							+ " " + tr.pointSize + "pt"
+							+ " C " + tr.getForegroundColor()
+							+ "\n";
+			}
 		}
 		return s;
 	}
@@ -132,21 +139,30 @@ public class TextExtractor extends PDFTextStripper {
 			Element pdf2xml = doc.createElement("pdf2xml");
 			doc.appendChild(pdf2xml);
 			
-			for (TextRun tr : textRuns) {
-				Element text = doc.createElement("text");
-				text.setAttribute("top", String.valueOf(tr.y));
-				text.setAttribute("left", String.valueOf(tr.x));
-				text.setAttribute("width", String.valueOf(tr.width));
-				text.setAttribute("height", String.valueOf(tr.height));
-				text.setAttribute("size", String.valueOf(tr.pointSize));
-				text.setAttribute("family", tr.getFontFamily());
-				text.setAttribute("face", tr.getFontFace());
-				text.setAttribute("color", tr.getForegroundColor());
+			for (PageInfo page : previousPages) {
+				Element pageEle = doc.createElement("page");
+				pageEle.setAttribute("top", String.valueOf(page.clipBox.getUpperRightY()));
+				pageEle.setAttribute("left", String.valueOf(page.clipBox.getLowerLeftX()));
+				pageEle.setAttribute("width", String.valueOf(page.clipBox.getWidth()));
+				pageEle.setAttribute("height", String.valueOf(page.clipBox.getHeight()));
+				pdf2xml.appendChild(pageEle);
 				
-				CDATASection cdata = doc.createCDATASection(tr.run);
+				for (TextRun tr : page.textRuns) {
+					Element text = doc.createElement("text");
+					text.setAttribute("top", String.valueOf(tr.y));
+					text.setAttribute("left", String.valueOf(tr.x));
+					text.setAttribute("width", String.valueOf(tr.width));
+					text.setAttribute("height", String.valueOf(tr.height));
+					text.setAttribute("size", String.valueOf(tr.pointSize));
+					text.setAttribute("family", tr.getFontFamily());
+					text.setAttribute("face", tr.getFontFace());
+					text.setAttribute("color", tr.getForegroundColor());
 				
-				pdf2xml.appendChild(text);
-				text.appendChild(cdata);
+					CDATASection cdata = doc.createCDATASection(tr.run);
+				
+					pageEle.appendChild(text);
+					text.appendChild(cdata);
+				}
 			}
 			
 			Source source = new DOMSource(doc);
@@ -168,6 +184,18 @@ public class TextExtractor extends PDFTextStripper {
 		}
         
 		return r;
+	}
+}
+
+class PageInfo {
+	ArrayList<TextRun> textRuns;
+	HashMap<Float, ArrayList<TextRun>> yPosMap;
+	PDRectangle clipBox;
+	
+	PageInfo(PDRectangle newClipBox) {
+		textRuns = new ArrayList<TextRun>();
+		yPosMap = new HashMap<Float, ArrayList<TextRun>>();
+		clipBox = newClipBox;
 	}
 }
 

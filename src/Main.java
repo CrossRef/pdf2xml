@@ -1,4 +1,7 @@
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -15,7 +18,7 @@ import org.apache.pdfbox.pdmodel.PDPageNode;
 
 public class Main {
 	
-	public static void parsePdf(File f) throws IOException {
+	private static TextExtractor parsePdf(File f) throws IOException {
 		PDDocument doc = PDDocument.load(f);
 		PDDocumentCatalog docCat = doc.getDocumentCatalog();
 		
@@ -36,17 +39,31 @@ public class Main {
 		
 		doc.close();
 		
-		System.out.println(te.toXml());
+		return te;
 	}
 	
 	public static void main(String[] filenames) {
 		for (String filename : filenames) {
+			File inputFile = new File(filename);
+			File outputFile = new File(filename + ".xml");
+			TextExtractor te = null;
+			
 			try {
-				parsePdf(new File(filename));
+				te = parsePdf(inputFile);
 			} catch (IOException e) {
-				Logger.getAnonymousLogger().log(Level.WARNING,
-												e.toString());
+				System.err.println("Couldn't read file '" + inputFile +"'.");
 			}
+			
+			try {
+				if (outputFile.exists()) {
+					outputFile.delete();
+				}
+				outputFile.createNewFile();
+			} catch (IOException e) {
+				System.err.println("Could not create output file '" + outputFile + "'.");
+			}
+			
+			System.out.println(te.toXml());
 		}
 	}
 

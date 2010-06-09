@@ -1,0 +1,36 @@
+<project name="pdf2xml" default="package" basedir=".">
+  <property name="src.dir" location="src"/>
+  <property name="classes.dir" location="classes"/>
+  <property name="lib.dir" location="lib"/>
+  <property name="output.jar" location="pdf2xml.jar"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${classes.dir}"/>
+  </target>
+
+  <target name="build" depends="init">
+    <javac srcdir="${src.dir}" destdir="${classes.dir}">
+      <classpath>
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="package" depends="build">
+    <jar destfile="pdf2xml-${DSTAMP}.jar">
+      <fileset dir="${classes.dir}"/>
+      <zipfileset src="${lib.dir}/pdfbox-1.1.0.jar" excludes="META-INF"/>
+      <zipfileset src="${lib.dir}/fontbox-1.1.0.jar" excludes="META-INF"/>
+      <zipfileset src="${lib.dir}/commons-logging-1.1.1.jar" excludes="META-INF"/>
+      <manifest>
+        <attribute name="Main-Class" 
+                   value="org.crossref.pdf2xml.Main"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${classes.dir}" failonerror="false"/>
+  </target>
+</project>

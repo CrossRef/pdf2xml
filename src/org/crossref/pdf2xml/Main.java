@@ -44,11 +44,11 @@ public class Main {
 			
 			try {
 				te = parsePdf(inputFile);
+				System.out.println(te.toXml());
 			} catch (IOException e) {
 				System.err.println("Couldn't read file '" + inputFile +"'.");
+				System.exit(1);
 			}
-			
-			System.out.println(te.toXml());
 		}
 	}
 

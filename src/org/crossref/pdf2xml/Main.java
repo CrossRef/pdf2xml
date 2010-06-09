@@ -40,22 +40,12 @@ public class Main {
 	public static void main(String[] filenames) {
 		for (String filename : filenames) {
 			File inputFile = new File(filename);
-			File outputFile = new File(filename + ".xml");
 			TextExtractor te = null;
 			
 			try {
 				te = parsePdf(inputFile);
 			} catch (IOException e) {
 				System.err.println("Couldn't read file '" + inputFile +"'.");
-			}
-			
-			try {
-				if (outputFile.exists()) {
-					outputFile.delete();
-				}
-				outputFile.createNewFile();
-			} catch (IOException e) {
-				System.err.println("Could not create output file '" + outputFile + "'.");
 			}
 			
 			System.out.println(te.toXml());

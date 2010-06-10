@@ -10,6 +10,7 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -197,6 +198,9 @@ public class TextExtractor extends PDFTextStripper {
 			Result result = new StreamResult(sw);
 			
 			Transformer xformer = TransformerFactory.newInstance().newTransformer();
+			xformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			xformer.setOutputProperty(OutputKeys.STANDALONE, "no");
+			xformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			xformer.transform(source, result);
 			
 			return sw.toString();

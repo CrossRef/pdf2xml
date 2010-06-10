@@ -13,11 +13,13 @@ public class Page {
 	private ArrayList<Text> texts;
 	private HashMap<Float, ArrayList<Text>> yPosMap;
 	private PDRectangle clipBox;
+	private int number;
 	
-	public Page(PDRectangle newClipBox) {
+	public Page(PDRectangle newClipBox, int newNumber) {
 		texts = new ArrayList<Text>();
 		yPosMap = new HashMap<Float, ArrayList<Text>>();
 		clipBox = newClipBox;
+		number = newNumber;
 	}
 	
 	public void addText(Text t) {
@@ -47,6 +49,10 @@ public class Page {
 	
 	public List<Text> getText() {
 		return texts;
+	}
+	
+	public int getNumber() {
+	    return number;
 	}
 	
 	public List<Text> getTextAtY(float y) {

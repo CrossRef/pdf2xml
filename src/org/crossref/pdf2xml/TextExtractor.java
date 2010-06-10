@@ -44,19 +44,20 @@ import org.crossref.pdf2xml.data.Text;
  */
 public class TextExtractor extends PDFTextStripper {
 	
-	private ArrayList<Page> previousPages;
+	private ArrayList<Page> previousPages = new ArrayList<Page>();
 	
-	private Page currentPage;
+	private Page currentPage = null;
+	
+	private int pageCount = 0;
 	
 	public TextExtractor() throws IOException {
 		super();
-		previousPages = new ArrayList<Page>();
 	}
 	
 	@Override
 	public void processStream(PDPage aPage, PDResources resources,
 			COSStream cosStream) throws IOException {
-		currentPage = new Page(aPage.findCropBox());
+		currentPage = new Page(aPage.findCropBox(), ++pageCount);
 		
 		super.processStream(aPage, resources, cosStream);
 		coalesceRows(currentPage);
@@ -172,6 +173,7 @@ public class TextExtractor extends PDFTextStripper {
 				pageEle.setAttribute("left", String.valueOf(cb.getLowerLeftX()));
 				pageEle.setAttribute("width", String.valueOf(cb.getWidth()));
 				pageEle.setAttribute("height", String.valueOf(cb.getHeight()));
+				pageEle.setAttribute("number", String.valueOf(page.getNumber()));
 				pdf2xml.appendChild(pageEle);
 				
 				for (Text t : page.getText()) {

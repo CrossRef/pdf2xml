@@ -169,8 +169,6 @@ public class TextExtractor extends PDFTextStripper {
 			for (Page page : previousPages) {
 				Element pageEle = doc.createElement("page");
 				PDRectangle cb = page.getClipBox();
-				pageEle.setAttribute("top", String.valueOf(cb.getUpperRightY()));
-				pageEle.setAttribute("left", String.valueOf(cb.getLowerLeftX()));
 				pageEle.setAttribute("width", String.valueOf(cb.getWidth()));
 				pageEle.setAttribute("height", String.valueOf(cb.getHeight()));
 				pageEle.setAttribute("number", String.valueOf(page.getNumber()));

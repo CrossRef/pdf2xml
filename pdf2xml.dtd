@@ -4,8 +4,6 @@
 <!ELEMENT text (#PCDATA)>
 
 <!ATTLIST page
-    top CDATA #REQUIRED
-    left CDATA #REQUIRED
     width CDATA #REQUIRED
     height CDATA #REQUIRED
     number CDATA #REQUIRED

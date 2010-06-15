@@ -36,11 +36,28 @@ public class Text implements Comparable<Text> {
 	}
 	
 	private static String getColorString(PDColorState c) {
-		float[] vals = c.getColorSpaceValue();
-		if (vals.length == 1) {
-			return "rgb(" + vals[0] + ", " + vals[0] + ", " + vals[0] + ")";
+		String colorString = "";
+		
+		float[] rgb = c.getColorSpaceValue();
+		if (rgb.length == 1) {
+		    int grey = (int) rgb[0] * 255;
+		    colorString = Integer.toHexString(grey);
+		    if (colorString.length() == 1) {
+		        colorString = "0" + colorString;
+		    }
+		    colorString = colorString + colorString + colorString;
+		} else {
+    		for (int colorIndex=0; colorIndex<3; colorIndex++) {
+    		    int color = (int) rgb[colorIndex] * 255;
+    		    String s = Integer.toHexString(color);
+    		    if (s.length() == 1) {
+    		        s = "0" + s;
+    		    }
+    		    colorString += s;
+    		}
 		}
-		return "rgb(" + vals[0] + ", " + vals[1] + ", " + vals[2] + ")";
+		
+		return "#" + colorString;
 	}
 	
 	public String getForegroundColor() {

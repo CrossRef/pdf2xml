@@ -178,7 +178,7 @@ public class TextExtractor extends PDFTextStripper {
 					text.setAttribute("left", String.valueOf(t.getX()));
 					text.setAttribute("width", String.valueOf(t.getWidth()));
 					text.setAttribute("height", String.valueOf(t.getHeight()));
-					text.setAttribute("size", String.valueOf(t.getPointSize()));
+					text.setAttribute("size", String.valueOf((int) t.getPointSize()));
 					text.setAttribute("family", t.getFontFamily());
 					text.setAttribute("face", t.getFontFace());
 					text.setAttribute("color", t.getForegroundColor());

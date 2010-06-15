@@ -68,27 +68,8 @@ public class TextExtractor extends PDFTextStripper {
 	protected void processTextPosition(TextPosition tp) {
 		PDGraphicsState gs = getGraphicsState();
 		
-		// try to find an existing text run that fits
-		boolean added = false;
-		
-		for (Text t : currentPage.getText()) {
-			if (t.hasMatchingStyle(tp, gs)) {
-				if (t.isIncidentToLeft(tp)) {
-					t.addBefore(tp);
-					added = true;
-					break;
-				} else if (t.isIncidentToRight(tp)) {
-					t.addAfter(tp);
-					added = true;
-					break;
-				}
-			}
-		}
-		
-		if (!added) {
-			Text newT = Text.newFor(tp, gs);
-			currentPage.addText(newT);
-		}
+		Text newT = Text.newFor(tp, gs);
+		currentPage.addText(newT);
 	}
 	
 	private void coalesceRows(Page page) {

@@ -66,6 +66,9 @@ public class Text implements Comparable<Text> {
 	
 	public String getFontFamily() {
 		String fontName = font.getBaseFont();
+		if (fontName.endsWith("MT")) {
+		    fontName = fontName.substring(0, fontName.length() - 2);
+		}
 		String[] bits = fontName.split("\\+|-");
 		if (bits.length > 1) {
 			return bits[1];
@@ -75,6 +78,9 @@ public class Text implements Comparable<Text> {
 	
 	public String getFontFace() {
 		String fontName = font.getBaseFont();
+		if (fontName.endsWith("MT")) {
+            fontName = fontName.substring(0, fontName.length() - 2);
+        }
 		String[] bits = fontName.split("\\+|-");
 		if (bits.length > 2) {
 			return bits[2];

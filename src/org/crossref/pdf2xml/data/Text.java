@@ -6,6 +6,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.util.TextPosition;
 
 public class Text implements Comparable<Text> {
+    /* x is actually our baseline. */
 	private float x, y, width, height, pointSize;
 	private String run;
 	private PDFont font;
@@ -14,8 +15,8 @@ public class Text implements Comparable<Text> {
 	
 	public static Text newFor(TextPosition tp, PDGraphicsState gs) {
 		Text t = new Text();
-		t.x = tp.getX();
-		t.y = tp.getY();
+		t.x = tp.getXDirAdj();
+		t.y = tp.getYDirAdj();
 		t.font = tp.getFont();
 		t.strokeColor = gs.getStrokingColor();
 		t.nonStrokeColor = gs.getNonStrokingColor();
@@ -23,7 +24,7 @@ public class Text implements Comparable<Text> {
 		t.width = tp.getWidth();
 		t.height = tp.getHeight();
 		t.pointSize = tp.getFontSizeInPt();
-		 
+		
 		return t;
 	}
 	
@@ -94,6 +95,10 @@ public class Text implements Comparable<Text> {
 	
 	public float getX() {
 		return x;
+	}
+	
+	public float getTop() {
+	    return x - height;
 	}
 
 	public float getY() {

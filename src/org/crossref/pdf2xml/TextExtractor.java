@@ -155,7 +155,7 @@ public class TextExtractor extends PDFTextStripper {
 				
 				for (Text t : page.getText()) {
 					Element text = doc.createElement("text");
-					text.setAttribute("top", String.valueOf(t.getY()));
+					text.setAttribute("top", String.valueOf(t.getTop()));
 					text.setAttribute("left", String.valueOf(t.getX()));
 					text.setAttribute("width", String.valueOf(t.getWidth()));
 					text.setAttribute("height", String.valueOf(t.getHeight()));

@@ -54,6 +54,7 @@ public class Main {
 			}
 			
 			JFrame frame = new JFrame();
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.add(new PageCanvas(te.getPages().get(0)));
 			frame.setSize(600, 800);
 			frame.setVisible(true);

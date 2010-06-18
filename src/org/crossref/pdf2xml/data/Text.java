@@ -98,7 +98,7 @@ public class Text implements Comparable<Text> {
 	}
 	
 	public float getTop() {
-	    return x - height;
+	    return y - height;
 	}
 
 	public float getY() {

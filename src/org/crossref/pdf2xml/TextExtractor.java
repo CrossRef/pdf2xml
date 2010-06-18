@@ -83,8 +83,7 @@ public class TextExtractor extends PDFTextStripper {
 				Text first = ts.get(i);
 				Text snd = ts.get(i+1);
 				
-				if (first.hasMatchingStyle(snd) 
-						/*&& first.isIncidentToRight(snd)*/) {
+				if (first.hasMatchingStyle(snd)) {
 					first.addAfter(snd);
 					page.removeText(snd);
 				} else {
@@ -115,6 +114,10 @@ public class TextExtractor extends PDFTextStripper {
 				}
 			}
 		}
+	}
+	
+	public List<Page> getPages() {
+	    return previousPages;
 	}
 	
 	public String toString() {

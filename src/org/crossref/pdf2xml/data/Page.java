@@ -25,7 +25,7 @@ public class Page {
 	public void addText(Text t) {
 		texts.add(t);
 		
-		Float yPos = new Float(t.getY());
+		Float yPos = new Float(t.getBaseline());
 		if (yPosMap.containsKey(yPos)) {
 			ArrayList<Text> l = yPosMap.get(yPos);
 			l.add(t);
@@ -39,7 +39,7 @@ public class Page {
 	public void removeText(Text t) {
 		if (texts.contains(t)) {
 			texts.remove(t);
-			yPosMap.get(t.getY()).remove(t);
+			yPosMap.get(t.getBaseline()).remove(t);
 		}
 	}
 	

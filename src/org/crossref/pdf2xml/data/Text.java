@@ -6,8 +6,7 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.util.TextPosition;
 
 public class Text implements Comparable<Text> {
-    /* x is actually our baseline. */
-	private float x, y, width, height, pointSize;
+	private float x, baseline, width, height, pointSize;
 	private String run;
 	private PDFont font;
 	private PDColorState strokeColor;
@@ -16,7 +15,7 @@ public class Text implements Comparable<Text> {
 	public static Text newFor(TextPosition tp, PDGraphicsState gs) {
 		Text t = new Text();
 		t.x = tp.getXDirAdj();
-		t.y = tp.getYDirAdj();
+		t.baseline = tp.getYDirAdj();
 		t.font = tp.getFont();
 		t.strokeColor = gs.getStrokingColor();
 		t.nonStrokeColor = gs.getNonStrokingColor();
@@ -98,11 +97,11 @@ public class Text implements Comparable<Text> {
 	}
 	
 	public float getTop() {
-	    return y - height;
+	    return baseline - height;
 	}
 
-	public float getY() {
-		return y;
+	public float getBaseline() {
+		return baseline;
 	}
 
 	public float getWidth() {
@@ -152,13 +151,13 @@ public class Text implements Comparable<Text> {
 	public boolean isIncidentToLeft(Text t) {
 		final float runRightX = t.x + t.width;
 		
-		return y == t.y
+		return baseline == t.baseline
 				&& runRightX >= (x - looseness())
 				&& runRightX <= x + looseness();
 	}
 	
 	public boolean isIncidentToRight(Text t) {
-		return y == t.y
+		return baseline == t.baseline
 				&& t.x >= (x + width - looseness())
 				&& t.x <= (x + width + looseness());
 	}
@@ -168,7 +167,7 @@ public class Text implements Comparable<Text> {
 		final float mostAcceptableRight = x;
 		final float charRightX = tp.getX() + tp.getWidth();
 		
-		return y == tp.getY() 
+		return baseline == tp.getY() 
 				&& charRightX >= mostAcceptableLeft
 				&& charRightX <= mostAcceptableRight;
 	}
@@ -177,7 +176,7 @@ public class Text implements Comparable<Text> {
 		final float mostAcceptableLeft = x + width;
 		final float mostAcceptableRight = x + width + looseness(tp, font);
 		
-		return y == tp.getY()
+		return baseline == tp.getY()
 				&& tp.getX() >= mostAcceptableLeft
 				&& tp.getX() <= mostAcceptableRight;
 	}

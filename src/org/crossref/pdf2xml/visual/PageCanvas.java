@@ -72,10 +72,12 @@ public class PageCanvas extends JComponent {
                               (int) (t.getPointSize() * scalingScalar));
             
             int x = (int) (scalingScalar * t.getX());
-            int y = (int) (scalingScalar * t.getTop());
+            int y = (int) (scalingScalar * t.getBaseline());
             g.setFont(f);
             g.drawString(t.getRun(), x, y);
         }
     }
+    
+    
     
 }

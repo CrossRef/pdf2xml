@@ -126,7 +126,7 @@ public class TextExtractor extends PDFTextStripper {
 			s += "Page @ " + page.getClipBox().getUpperRightY()
 						   + ", " + page.getClipBox().getLowerLeftX();
 			for (Text t : page.getText()) {
-				s += t.getRun() + " @ " + t.getX() + "," + t.getY() 
+				s += t.getRun() + " @ " + t.getX() + "," + t.getBaseline() 
 							+ " w " + t.getWidth()
 							+ " : " + t.getBaseFontName() 
 							+ " "   + t.getPointSize() + "pt"

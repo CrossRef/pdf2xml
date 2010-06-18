@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JFrame;
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageNode;
+import org.crossref.pdf2xml.visual.PageCanvas;
 
 
 public class Main {
@@ -49,6 +52,11 @@ public class Main {
 				System.err.println("Couldn't read file '" + inputFile +"'.");
 				System.exit(1);
 			}
+			
+			JFrame frame = new JFrame();
+			frame.add(new PageCanvas(te.getPages().get(0)));
+			frame.setSize(600, 800);
+			frame.setVisible(true);
 		}
 	}
 

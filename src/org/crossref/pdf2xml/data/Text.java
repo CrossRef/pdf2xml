@@ -1,12 +1,15 @@
 package org.crossref.pdf2xml.data;
 
+import java.io.IOException;
+
 import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
 import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.util.TextPosition;
 
 public class Text implements Comparable<Text> {
-	private float x, baseline, width, height, pointSize;
+	private float x, baseline, width, height, pointSize, descent, ascent, fontSize;
 	private String run;
 	private PDFont font;
 	private PDColorState strokeColor;
@@ -23,6 +26,16 @@ public class Text implements Comparable<Text> {
 		t.width = tp.getWidth();
 		t.height = tp.getHeight();
 		t.pointSize = tp.getFontSizeInPt();
+		t.fontSize = tp.getYScale();
+		
+		// Bump the width by the word spacing for each space in tp.
+		for (int i=0; i<tp.getCharacter().length(); i++) {
+		    Character c = tp.getCharacter().charAt(i);
+		    if (c.equals(" ")) {
+		        t.width -= tp.getWidthOfSpace();
+		        t.width += tp.getWordSpacing();
+		    }
+		}
 		
 		return t;
 	}
@@ -97,19 +110,57 @@ public class Text implements Comparable<Text> {
 	}
 	
 	public float getTop() {
-	    return baseline - height;
+	    return baseline - ascent;
+	}
+	
+	public float getBottom() {
+	    return baseline - descent;
 	}
 
 	public float getBaseline() {
 		return baseline;
 	}
+	
+	public float getAscent() {
+	    return getAscent(font, fontSize);
+	}
+	
+	public float getDescent() {
+	    return getDescent(font, fontSize);
+	}
+	
+	private static float getAscent(PDFont font, float fontSize) {
+	    if (font instanceof PDSimpleFont) {
+            try {
+                PDSimpleFont simpleFont = (PDSimpleFont) font;
+                System.out.println("Ascent = " + simpleFont.getFontDescriptor().getAscent());
+                System.out.println("Font size = " + fontSize);
+                return (simpleFont.getFontDescriptor().getAscent() / 1000) * fontSize;
+            } catch (IOException e) {
+                // fall through
+            }
+        }
+        return 0.0f;
+	}
 
+	private static float getDescent(PDFont font, float fontSize) {
+	    if (font instanceof PDSimpleFont) {
+	        try {
+	            PDSimpleFont simpleFont = (PDSimpleFont) font;
+	            return (-Math.abs(simpleFont.getFontDescriptor().getDescent()) / 1000) * fontSize;
+	        } catch (IOException e) {
+	            // fall through
+	        }
+	    }
+	    return 0.0f;
+	}
+	
 	public float getWidth() {
 		return width;
 	}
 
 	public float getHeight() {
-		return height;
+		return getBottom() - getTop();
 	}
 
 	public float getPointSize() {
@@ -124,6 +175,8 @@ public class Text implements Comparable<Text> {
 		run = t.run + run;
 		width += t.width;
 		height = Math.max(height, t.height);
+		ascent = Math.max(ascent, t.getAscent());
+        descent = Math.min(descent, t.getDescent());
 		return this;
 	}
 	
@@ -131,6 +184,8 @@ public class Text implements Comparable<Text> {
 		run += t.run;
 		width += t.width;
 		height = Math.max(height, t.height);
+		ascent = Math.max(ascent, t.getAscent());
+		descent = Math.min(descent, t.getDescent());
 		return this;
 	}
 	
@@ -138,6 +193,8 @@ public class Text implements Comparable<Text> {
 		run = tp.getCharacter() + run;
 		width += tp.getWidth();
 		height = Math.max(height, tp.getHeight());
+		ascent = Math.max(ascent, getAscent(tp.getFont(), tp.getYScale()));
+		descent = Math.min(descent, getDescent(tp.getFont(), tp.getYScale()));
 		return this;
 	}
 	
@@ -145,6 +202,8 @@ public class Text implements Comparable<Text> {
 		run += tp.getCharacter();
 		width += tp.getWidth();
 		height = Math.max(height, tp.getHeight());
+		ascent = Math.max(ascent, getAscent(tp.getFont(), tp.getYScale()));
+        descent = Math.min(descent, getDescent(tp.getFont(), tp.getYScale()));
 		return this;
 	}
 	

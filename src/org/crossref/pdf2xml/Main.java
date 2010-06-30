@@ -55,8 +55,10 @@ public class Main {
 			}
 			
 			JFrame frame = new JFrame();
+			PageCanvas pc = new PageCanvas(te.getPages());
+			JScrollPane scrollPane = new JScrollPane(pc);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.add(new PageCanvas(te.getPages()));
+			frame.add(scrollPane);
 			frame.setSize(600, 800);
 			frame.setVisible(true);
 		}

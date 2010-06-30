@@ -133,8 +133,6 @@ public class Text implements Comparable<Text> {
 	    if (font instanceof PDSimpleFont) {
             try {
                 PDSimpleFont simpleFont = (PDSimpleFont) font;
-                System.out.println("Ascent = " + simpleFont.getFontDescriptor().getAscent());
-                System.out.println("Font size = " + fontSize);
                 return (simpleFont.getFontDescriptor().getAscent() / 1000) * fontSize;
             } catch (IOException e) {
                 // fall through

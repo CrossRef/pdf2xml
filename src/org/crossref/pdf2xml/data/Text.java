@@ -146,7 +146,6 @@ public class Text implements Comparable<Text> {
 	}
 
 	private static float getDescent(PDFont font, float fontSize) {
-	    System.out.println(font);
 	    try {
 	        if (font instanceof PDSimpleFont) {
 	            PDSimpleFont simpleFont = (PDSimpleFont) font;

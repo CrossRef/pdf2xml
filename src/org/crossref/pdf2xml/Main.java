@@ -53,14 +53,6 @@ public class Main {
 				System.err.println("Couldn't read file '" + inputFile +"'.");
 				System.exit(1);
 			}
-			
-			JFrame frame = new JFrame();
-			PageCanvas pc = new PageCanvas(te.getPages());
-			JScrollPane scrollPane = new JScrollPane(pc);
-			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.add(scrollPane);
-			frame.setSize(600, 800);
-			frame.setVisible(true);
 		}
 	}
 

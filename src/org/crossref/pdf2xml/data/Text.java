@@ -171,7 +171,7 @@ public class Text implements Comparable<Text> {
 
 	public Text addBefore(Text t) {
 		run = t.run + run;
-		width += t.width;
+		width += x - t.x + t.width;
 		height = Math.max(height, t.height);
 		ascent = Math.max(ascent, t.getAscent());
         descent = Math.min(descent, t.getDescent());
@@ -180,7 +180,7 @@ public class Text implements Comparable<Text> {
 	
 	public Text addAfter(Text t) {
 		run += t.run;
-		width += t.width;
+		width += t.x - (x + width) + t.width; 
 		height = Math.max(height, t.height);
 		ascent = Math.max(ascent, t.getAscent());
 		descent = Math.min(descent, t.getDescent());
@@ -189,7 +189,7 @@ public class Text implements Comparable<Text> {
 	
 	public Text addBefore(TextPosition tp) {
 		run = tp.getCharacter() + run;
-		width += tp.getWidth();
+		width += x - tp.getX() + tp.getWidth();
 		height = Math.max(height, tp.getHeight());
 		ascent = Math.max(ascent, getAscent(tp.getFont(), tp.getYScale()));
 		descent = Math.min(descent, getDescent(tp.getFont(), tp.getYScale()));
@@ -198,7 +198,7 @@ public class Text implements Comparable<Text> {
 	
 	public Text addAfter(TextPosition tp) {
 		run += tp.getCharacter();
-		width += tp.getWidth();
+		width += tp.getX() - (x + width) + tp.getWidth();
 		height = Math.max(height, tp.getHeight());
 		ascent = Math.max(ascent, getAscent(tp.getFont(), tp.getYScale()));
         descent = Math.min(descent, getDescent(tp.getFont(), tp.getYScale()));

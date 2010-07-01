@@ -2,6 +2,7 @@ package org.crossref.pdf2xml.data;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
 import org.apache.pdfbox.pdmodel.graphics.PDGraphicsState;
@@ -130,26 +131,33 @@ public class Text implements Comparable<Text> {
 	}
 	
 	private static float getAscent(PDFont font, float fontSize) {
-	    if (font instanceof PDSimpleFont) {
-            try {
-                PDSimpleFont simpleFont = (PDSimpleFont) font;
-                return (simpleFont.getFontDescriptor().getAscent() / 1000) * fontSize;
-            } catch (IOException e) {
-                // fall through
-            }
+	    try {
+	        if (font instanceof PDSimpleFont) {
+	            PDSimpleFont simpleFont = (PDSimpleFont) font;
+	            return (simpleFont.getFontDescriptor().getAscent() / 1000) * fontSize;
+	        } else if (font instanceof PDCIDFont) {
+	            PDCIDFont cidFont = (PDCIDFont) font;
+	            return (cidFont.getFontDescriptor().getAscent() / 1000) * fontSize;
+	        }
+	    } catch (IOException e) {
+            // fall through
         }
         return 0.0f;
 	}
 
 	private static float getDescent(PDFont font, float fontSize) {
-	    if (font instanceof PDSimpleFont) {
-	        try {
+	    System.out.println(font);
+	    try {
+	        if (font instanceof PDSimpleFont) {
 	            PDSimpleFont simpleFont = (PDSimpleFont) font;
 	            return (-Math.abs(simpleFont.getFontDescriptor().getDescent()) / 1000) * fontSize;
-	        } catch (IOException e) {
-	            // fall through
+	        } else if (font instanceof PDCIDFont) {
+	            PDCIDFont cidFont = (PDCIDFont) font;
+	            return (-Math.abs(cidFont.getFontDescriptor().getDescent()) / 1000) * fontSize;
 	        }
-	    }
+	    } catch (IOException e) {
+            // fall through
+        }
 	    return 0.0f;
 	}
 	

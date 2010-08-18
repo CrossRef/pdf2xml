@@ -2,6 +2,8 @@ package org.crossref.pdf2xml.data;
 
 import java.io.IOException;
 
+import org.apache.fontbox.cmap.CMap;
+import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
@@ -10,7 +12,9 @@ import org.apache.pdfbox.pdmodel.graphics.color.PDColorState;
 import org.apache.pdfbox.util.TextPosition;
 
 public class Text implements Comparable<Text> {
-	private float x, baseline, width, height, pointSize, descent, ascent, fontSize;
+
+	private float x, baseline, width, height, pointSize, 
+	              descent, ascent, fontSize;
 	private String run;
 	private PDFont font;
 	private PDColorState strokeColor;

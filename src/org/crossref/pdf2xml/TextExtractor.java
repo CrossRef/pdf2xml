@@ -36,7 +36,7 @@ import org.crossref.pdf2xml.data.Text;
 
 /**
  * Extract text from a PDF document with position and style information.
- * This class attempts to coalease runs of text on the page; that is, 
+ * This class attempts to coalesce runs of text on the page; that is, 
  * 
  * @author Karl Ward
  */
@@ -67,9 +67,7 @@ public class TextExtractor extends PDFTextStripper {
 
 	protected void processTextPosition(TextPosition tp) {
 		PDGraphicsState gs = getGraphicsState();
-		
-		Text newT = Text.newFor(tp, gs);
-		currentPage.addText(newT);
+        currentPage.addText(Text.newFor(tp, gs));
 	}
 	
 	private void coalesceRows(Page page) {

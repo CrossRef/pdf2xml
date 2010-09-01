@@ -12,6 +12,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentCatalog;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageNode;
+import org.apache.pdfbox.util.PDFTextStripper;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -28,6 +29,9 @@ public class Main {
 	
 	private TextExtractor parsePdf(File f) throws IOException {
 		PDDocument doc = PDDocument.load(f);
+		
+		PDFTextStripper s = new PDFTextStripper();
+		System.out.println(s.getText(doc));
 		
 		if(doc.isEncrypted()) {
             // Some documents are encrypted with the empty password. Try
@@ -82,18 +86,19 @@ public class Main {
 	public static void main(String[] args) {
 	    Main m = new Main();
         CmdLineParser parser = new CmdLineParser(m);
-        
-        if (args.length == 0) {
-            System.err.println("Usage: pdf2xml [options] <FILEs>");
-            parser.printUsage(System.err);
-        } else {
+       
             try {
                 parser.parseArgument(args);
-                m.doMain();
+                
+                if (m.filenames.size() == 0) {
+                    System.err.println("Usage: pdf2xml [options] <FILEs>");
+                    parser.printUsage(System.err);
+                } else {
+                    m.doMain();
+                }
             } catch (CmdLineException e) {
                 parser.printUsage(System.err);
             }
-        }
 	}
 
 }

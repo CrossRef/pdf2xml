@@ -2,8 +2,6 @@ package org.crossref.pdf2xml.data;
 
 import java.io.IOException;
 
-import org.apache.fontbox.cmap.CMap;
-import org.apache.pdfbox.encoding.Encoding;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
@@ -138,10 +136,12 @@ public class Text implements Comparable<Text> {
 	    try {
 	        if (font instanceof PDSimpleFont) {
 	            PDSimpleFont simpleFont = (PDSimpleFont) font;
-	            return (simpleFont.getFontDescriptor().getAscent() / 1000) * fontSize;
+	            return (simpleFont.getFontDescriptor().getAscent() 
+	                        / 1000) * fontSize;
 	        } else if (font instanceof PDCIDFont) {
 	            PDCIDFont cidFont = (PDCIDFont) font;
-	            return (cidFont.getFontDescriptor().getAscent() / 1000) * fontSize;
+	            return (cidFont.getFontDescriptor().getAscent() 
+	                        / 1000) * fontSize;
 	        }
 	    } catch (IOException e) {
             // fall through
@@ -153,10 +153,12 @@ public class Text implements Comparable<Text> {
 	    try {
 	        if (font instanceof PDSimpleFont) {
 	            PDSimpleFont simpleFont = (PDSimpleFont) font;
-	            return (-Math.abs(simpleFont.getFontDescriptor().getDescent()) / 1000) * fontSize;
+	            return (-Math.abs(simpleFont.getFontDescriptor().getDescent()) 
+	                        / 1000) * fontSize;
 	        } else if (font instanceof PDCIDFont) {
 	            PDCIDFont cidFont = (PDCIDFont) font;
-	            return (-Math.abs(cidFont.getFontDescriptor().getDescent()) / 1000) * fontSize;
+	            return (-Math.abs(cidFont.getFontDescriptor().getDescent()) 
+	                        / 1000) * fontSize;
 	        }
 	    } catch (IOException e) {
             // fall through
@@ -260,7 +262,7 @@ public class Text implements Comparable<Text> {
 				&& t.strokeColor == strokeColor
 				&& t.nonStrokeColor == nonStrokeColor;
 	}
-
+	
 	@Override
 	public int compareTo(Text other) {
 		if (this.x < other.x) {

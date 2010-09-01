@@ -20,8 +20,8 @@
   <target name="package" depends="build">
     <jar destfile="pdf2xml-${DSTAMP}.jar">
       <fileset dir="${classes.dir}"/>
-      <zipfileset src="${lib.dir}/pdfbox-1.1.0.jar" excludes="META-INF"/>
-      <zipfileset src="${lib.dir}/fontbox-1.1.0.jar" excludes="META-INF"/>
+      <zipfileset src="${lib.dir}/pdfbox-1.2.1.jar" excludes="META-INF"/>
+      <zipfileset src="${lib.dir}/fontbox-1.2.1.jar" excludes="META-INF"/>
       <zipfileset src="${lib.dir}/commons-logging-1.1.1.jar" excludes="META-INF"/>
       <zipfileset src="${lib.dir}/args4j-2.0.11.jar" excludes="META-INF"/>
       <manifest>

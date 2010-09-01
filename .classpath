@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="lib/pdfbox-1.1.0.jar" sourcepath="lib/pdfbox-1.1.0-src.zip"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/fontbox-1.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/args4j-2.0.11.jar"/>
+	<classpathentry kind="lib" path="lib/fontbox-1.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/pdfbox-1.2.1.jar" sourcepath="lib/pdfbox-1.2.1-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

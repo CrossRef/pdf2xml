@@ -1,5 +1,8 @@
 package org.crossref.pdf2xml;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -194,6 +197,29 @@ public class TextExtractor extends PDFTextStripper {
 		}
         
 		return r;
+	}
+	
+	/**
+	 * @return Answers an image that contains coloured rectangles representing
+	 * the locations of 
+	 */
+	public BufferedImage toMaskImage(int pageN) {
+	    Page p = previousPages.get(pageN - 1);
+	    BufferedImage bi = new BufferedImage((int) p.getClipBox().getWidth(), 
+	                                         (int) p.getClipBox().getHeight(),
+	                                         BufferedImage.TYPE_INT_RGB);
+	    Graphics g = bi.getGraphics();
+	    g.setColor(Color.WHITE);
+	    g.fillRect(0, 0, bi.getWidth(), bi.getHeight());
+	    g.setColor(Color.BLACK);
+	    for (Text t : p.getText()) {
+	        g.fillRect((int) t.getX(), 
+	                   (int) (bi.getHeight() - t.getTop()), 
+	                   (int) t.getWidth(), 
+	                   (int) t.getHeight());
+	    }
+	    
+	    return bi;
 	}
 }
 

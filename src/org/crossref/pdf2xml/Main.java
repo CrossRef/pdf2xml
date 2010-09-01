@@ -1,9 +1,12 @@
 package org.crossref.pdf2xml;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.exceptions.InvalidPasswordException;
@@ -24,6 +27,10 @@ public class Main {
             required=false, multiValued=false, metaVar="PASSWD")
     private String password = "";
     
+    @Option(name="-m", usage="Also create a text location mask image.",
+            required=false, multiValued=false, metaVar="PAGENO")
+    private int maskImagePage = 0;
+    
     @Argument
     private List<String> filenames = new ArrayList<String>();
 	
@@ -31,7 +38,6 @@ public class Main {
 		PDDocument doc = PDDocument.load(f);
 		
 		PDFTextStripper s = new PDFTextStripper();
-		System.out.println(s.getText(doc));
 		
 		if(doc.isEncrypted()) {
             // Some documents are encrypted with the empty password. Try
@@ -80,6 +86,17 @@ public class Main {
                 System.err.println("Couldn't read file '" + inputFile +"'.");
                 System.exit(1);
             }
+            
+            try {
+                if (maskImagePage > 0) {
+                    BufferedImage maskImage = te.toMaskImage(maskImagePage);
+                    ImageIO.write(maskImage, "png", new File("mask.png"));
+                }
+            } catch (IOException e) {
+                System.err.println("Couldn't write mask image 'mask.png'.");
+                System.exit(1);
+            }
+            
         }
 	}
 	

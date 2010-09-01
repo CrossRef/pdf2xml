@@ -214,7 +214,7 @@ public class TextExtractor extends PDFTextStripper {
 	    g.setColor(Color.BLACK);
 	    for (Text t : p.getText()) {
 	        g.fillRect((int) t.getX(), 
-	                   (int) (bi.getHeight() - t.getTop()), 
+	                   (int) t.getTop(), 
 	                   (int) t.getWidth(), 
 	                   (int) t.getHeight());
 	    }

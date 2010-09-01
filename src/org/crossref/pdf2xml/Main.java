@@ -37,8 +37,6 @@ public class Main {
 	private TextExtractor parsePdf(File f) throws IOException {
 		PDDocument doc = PDDocument.load(f);
 		
-		PDFTextStripper s = new PDFTextStripper();
-		
 		if(doc.isEncrypted()) {
             // Some documents are encrypted with the empty password. Try
 		    // to decrypt with this password, or the one passed in on the

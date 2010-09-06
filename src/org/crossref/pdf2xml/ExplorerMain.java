@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyStore.Entry;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -54,7 +55,7 @@ public class ExplorerMain {
         }
     }
     
-    public static JFrame createExplorer(PDDocument doc) {
+    public static JFrame createExplorer(PDDocument doc) throws IOException {
         JFrame frame = new JFrame();
         
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Doc");
@@ -63,10 +64,37 @@ public class ExplorerMain {
         
         COSDocument cosDoc = doc.getDocument();
         
+        DefaultMutableTreeNode dId = 
+            new DefaultMutableTreeNode("Document Id");
+        addCOSBase(dId, cosDoc.getDocumentID());
+        root.add(dId);
+        
+        DefaultMutableTreeNode catalog = 
+            new DefaultMutableTreeNode("Catalog");
+        addCOSBase(catalog, cosDoc.getCatalog());
+        root.add(catalog);
+        
+        if (cosDoc.getEncryptionDictionary() != null) {
+            DefaultMutableTreeNode encDict = 
+                new DefaultMutableTreeNode("EncryptionDictionary");
+            addCOSBase(encDict, cosDoc.getEncryptionDictionary());
+            root.add(encDict);
+        }
+        
+        DefaultMutableTreeNode trailer = 
+            new DefaultMutableTreeNode("Trailer");
+        addCOSBase(trailer, cosDoc.getTrailer());
+        root.add(trailer);
+        
+        DefaultMutableTreeNode everything = 
+            new DefaultMutableTreeNode("Everything");
+        
         for (COSObject obj : cosDoc.getObjects()) {
             COSBase base = obj.getObject();
-            addCOSBase(root, base);
+            addCOSBase(everything, base);
         }
+        
+        root.add(everything);
         
         return frame;
     }
@@ -74,7 +102,7 @@ public class ExplorerMain {
     private static void addCOSBase(DefaultMutableTreeNode root, COSBase base) {
         if (base instanceof COSArray) {
             COSArray ary = (COSArray) base;
-            DefaultMutableTreeNode nestedTn = new DefaultMutableTreeNode("Array");
+            DefaultMutableTreeNode nestedTn = new DefaultMutableTreeNode("#Array");
             
             for (int i=0; i<ary.size(); i++) {
                 COSBase valueObj = ary.get(i);
@@ -85,13 +113,13 @@ public class ExplorerMain {
             
         } else if (base instanceof COSDictionary) {
             COSDictionary dict = (COSDictionary) base;
-            DefaultMutableTreeNode nestedTn = new DefaultMutableTreeNode("Dict");
+            DefaultMutableTreeNode nestedTn = new DefaultMutableTreeNode("#Dict");
             
-            for (COSBase valueObj : dict.getValues()) {
-                COSName key = dict.getKeyForValue(valueObj);
-                DefaultMutableTreeNode keyNode = new DefaultMutableTreeNode(key.getName());
+            for (java.util.Map.Entry<COSName, COSBase> e : dict.entrySet()) {
+                String keyName = e.getKey().getName();
+                DefaultMutableTreeNode keyNode = new DefaultMutableTreeNode(keyName);
                 
-                addCOSBase(keyNode, valueObj);
+                addCOSBase(keyNode, e.getValue());
                 nestedTn.add(keyNode);
             }
             
@@ -108,9 +136,9 @@ public class ExplorerMain {
         } else if (base instanceof COSInteger) {
             return String.valueOf(((COSInteger) base).doubleValue());
         } else if (base instanceof COSName) {
-            return "#" + ((COSName) base).getName();
+            return ((COSName) base).getName();
         } else if (base instanceof COSString) {
-            return ((COSString) base).getString();
+            return "\"" + ((COSString) base).getString() + "\"";
         }
         return base.toString();
     }

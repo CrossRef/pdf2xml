@@ -27,10 +27,7 @@ import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSNull;
 import org.apache.pdfbox.cos.COSObject;
-import org.apache.pdfbox.cos.COSStream;
 import org.apache.pdfbox.cos.COSString;
-import org.apache.pdfbox.cos.ICOSVisitor;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 
 /**
@@ -139,6 +136,10 @@ public class ExplorerMain {
             return ((COSName) base).getName();
         } else if (base instanceof COSString) {
             return "\"" + ((COSString) base).getString() + "\"";
+        } else if (base instanceof COSFloat) {
+            return String.valueOf(((COSFloat) base).floatValue());
+        } else if (base instanceof COSNull) {
+            return "#Null";
         }
         return base.toString();
     }

@@ -201,7 +201,7 @@ public class TextExtractor extends PDFTextStripper {
 	
 	/**
 	 * @return Answers an image that contains coloured rectangles representing
-	 * the locations of 
+	 * the locations of text runs.
 	 */
 	public BufferedImage toMaskImage(int pageN) {
 	    Page p = previousPages.get(pageN - 1);

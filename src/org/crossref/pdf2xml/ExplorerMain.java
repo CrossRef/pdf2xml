@@ -140,6 +140,10 @@ public class ExplorerMain {
             return String.valueOf(((COSFloat) base).floatValue());
         } else if (base instanceof COSNull) {
             return "#Null";
+        } else if (base instanceof COSObject) {
+            COSObject cosObj = (COSObject) base;
+            return "COSObject Gen: " + cosObj.getGenerationNumber().intValue()
+                    + " Obj: " + cosObj.getObjectNumber().intValue();
         }
         return base.toString();
     }

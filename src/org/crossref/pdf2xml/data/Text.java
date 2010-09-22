@@ -117,7 +117,7 @@ public class Text implements Comparable<Text> {
 	    if (ascent != 0) {
 	        return baseline - ascent;
 	    } else {
-	        return baseline - (getBoundingBoxHeight() / 2);
+	        return baseline - getBoundingBoxAscent();
 	    }
 	}
 	
@@ -125,7 +125,7 @@ public class Text implements Comparable<Text> {
 	    if (descent != 0) {
 	        return baseline - descent;
 	    } else {
-	        return baseline + (getBoundingBoxHeight() / 2);
+	        return baseline - getBoundingBoxDescent();
 	    }
 	}
 
@@ -141,20 +141,35 @@ public class Text implements Comparable<Text> {
 	    return getDescent(font, fontSize);
 	}
 	
-	public float getBoundingBoxHeight() {
-	    return getBoundingBoxHeight(font, fontSize);
+	public float getBoundingBoxDescent() {
+	    return getBoundingBoxDescent(font, fontSize);
 	}
 	
-	public static float getBoundingBoxHeight(PDFont font, float fontSize) {
+	public float getBoundingBoxAscent() {
+        return getBoundingBoxAscent(font, fontSize);
+    }
+	
+	public static float getBoundingBoxDescent(PDFont font, float fontSize) {
 	    try {
 	        PDRectangle bBox = font.getFontBoundingBox();
-	        float boxHeight = bBox.getHeight();
-	        return (boxHeight / 1000) * fontSize;
+	        float boxDescent = bBox.getLowerLeftY();
+	        return (boxDescent / 1000) * fontSize;
 	    } catch (IOException e) {
 	        // fall through
 	    }
 	    return 0.0f;
 	}
+	
+	public static float getBoundingBoxAscent(PDFont font, float fontSize) {
+        try {
+            PDRectangle bBox = font.getFontBoundingBox();
+            float boxAscent = bBox.getUpperRightY();
+            return (boxAscent / 1000) * fontSize;
+        } catch (IOException e) {
+            // fall through
+        }
+        return 0.0f;
+    }
 	
 	private static float getAscent(PDFont font, float fontSize) {
 	    try {

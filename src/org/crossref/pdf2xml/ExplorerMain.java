@@ -110,7 +110,11 @@ public class ExplorerMain {
             
         } else if (base instanceof COSDictionary) {
             COSDictionary dict = (COSDictionary) base;
-            DefaultMutableTreeNode nestedTn = new DefaultMutableTreeNode("#Dict");
+            
+            // Look for a Type key, add it to the display name of the dict.
+            final String typeStr = dict.getNameAsString("Type");
+            final String nodeName = "#Dict" + (typeStr == null ? "" : (" " + typeStr));
+            DefaultMutableTreeNode nestedTn = new DefaultMutableTreeNode(nodeName);
             
             for (java.util.Map.Entry<COSName, COSBase> e : dict.entrySet()) {
                 String keyName = e.getKey().getName();

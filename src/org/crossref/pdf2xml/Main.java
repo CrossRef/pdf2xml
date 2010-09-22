@@ -102,18 +102,18 @@ public class Main {
 	    Main m = new Main();
         CmdLineParser parser = new CmdLineParser(m);
        
-            try {
-                parser.parseArgument(args);
-                
-                if (m.filenames.size() == 0) {
-                    System.err.println("Usage: pdf2xml [options] <FILEs>");
-                    parser.printUsage(System.err);
-                } else {
-                    m.doMain();
-                }
-            } catch (CmdLineException e) {
+        try {
+            parser.parseArgument(args);
+            
+            if (m.filenames.size() == 0) {
+                System.err.println("Usage: pdf2xml [options] <FILEs>");
                 parser.printUsage(System.err);
+            } else {
+                m.doMain();
             }
+        } catch (CmdLineException e) {
+            parser.printUsage(System.err);
+        }
 	}
 
 }

@@ -2,6 +2,7 @@ package org.crossref.pdf2xml.data;
 
 import java.io.IOException;
 
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDCIDFont;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDSimpleFont;
@@ -113,11 +114,19 @@ public class Text implements Comparable<Text> {
 	}
 	
 	public float getTop() {
-	    return baseline - ascent;
+	    if (ascent != 0) {
+	        return baseline - ascent;
+	    } else {
+	        return baseline - (getBoundingBoxHeight() / 2);
+	    }
 	}
 	
 	public float getBottom() {
-	    return baseline - descent;
+	    if (descent != 0) {
+	        return baseline - descent;
+	    } else {
+	        return baseline + (getBoundingBoxHeight() / 2);
+	    }
 	}
 
 	public float getBaseline() {
@@ -130,6 +139,21 @@ public class Text implements Comparable<Text> {
 	
 	public float getDescent() {
 	    return getDescent(font, fontSize);
+	}
+	
+	public float getBoundingBoxHeight() {
+	    return getBoundingBoxHeight(font, fontSize);
+	}
+	
+	public static float getBoundingBoxHeight(PDFont font, float fontSize) {
+	    try {
+	        PDRectangle bBox = font.getFontBoundingBox();
+	        float boxHeight = bBox.getHeight();
+	        return (boxHeight / 1000) * fontSize;
+	    } catch (IOException e) {
+	        // fall through
+	    }
+	    return 0.0f;
 	}
 	
 	private static float getAscent(PDFont font, float fontSize) {
